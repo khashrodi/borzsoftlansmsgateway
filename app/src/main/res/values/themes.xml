@@ -1,17 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.BorzSoft" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/borzsoft_primary</item>
-        <item name="colorPrimaryVariant">@color/borzsoft_accent</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryVariant">@color/accent_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/borzsoft_highlight</item>
+        <item name="colorSecondary">@color/primary</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:windowBackground">@color/borzsoft_primary</item>
-        <item name="android:statusBarColor">@color/borzsoft_secondary</item>
-        <item name="android:navigationBarColor">@color/borzsoft_primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/surface</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="materialCardViewStyle">@style/BorzSoftCard</item>
     </style>
 
     <style name="Theme.BorzSoft.Splash" parent="Theme.BorzSoft">
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="BorzSoftCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="BorzSoft.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/accent</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="BorzSoft.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">10dp</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="android:textColor">@color/on_surface_muted</item>
     </style>
 </resources>

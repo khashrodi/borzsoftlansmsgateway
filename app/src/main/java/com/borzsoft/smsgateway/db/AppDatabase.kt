@@ -4,31 +4,37 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.borzsoft.smsgateway.db.dao.IpLogDao
+import com.borzsoft.smsgateway.db.dao.SessionDao
 import com.borzsoft.smsgateway.db.dao.SmsLogDao
-import com.borzsoft.smsgateway.db.dao.WebSessionDao
 import com.borzsoft.smsgateway.db.entity.IpLog
+import com.borzsoft.smsgateway.db.entity.Session
 import com.borzsoft.smsgateway.db.entity.SmsLog
-import com.borzsoft.smsgateway.db.entity.WebSession
 
 @Database(
-    entities = [SmsLog::class, WebSession::class, IpLog::class],
+    entities = [SmsLog::class, Session::class, IpLog::class],
     version = 1,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
+
     abstract fun smsLogDao(): SmsLogDao
-    abstract fun webSessionDao(): WebSessionDao
+    abstract fun sessionDao(): SessionDao
+    abstract fun ipLogDao(): IpLogDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile private var instance: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
+        fun create(context: Context): AppDatabase =
+            instance ?: synchronized(this) {
+                instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "borzsoft_gateway.db"
-                ).build().also { INSTANCE = it }
+                    "borzsoft_smsgateway.db"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { instance = it }
             }
     }
 }

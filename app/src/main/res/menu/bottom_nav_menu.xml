@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_dashboard" android:title="Dashboard" android:icon="@drawable/ic_notification"/>
+    <item android:id="@+id/nav_send" android:title="Send SMS" android:icon="@drawable/ic_notification"/>
+    <item android:id="@+id/nav_web" android:title="Web Access" android:icon="@drawable/ic_notification"/>
+    <item android:id="@+id/nav_logs" android:title="Logs" android:icon="@drawable/ic_notification"/>
+</menu>

@@ -8,6 +8,7 @@ data class IpLog(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val ip: String,
     val action: String,
-    val detail: String,
+    val detail: String = "",
+    val success: Boolean = true,
     val timestamp: String
 )

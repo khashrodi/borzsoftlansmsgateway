@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Gateway">
+        <SwitchPreferenceCompat
+            android:key="auto_start_on_boot"
+            android:title="Auto-start on boot"
+            android:summary="Start gateway automatically when device boots"
+            android:defaultValue="true"/>
+        <EditTextPreference
+            android:key="gateway_port"
+            android:title="Server port"
+            android:summary="Default: 8080"
+            android:defaultValue="8080"
+            android:inputType="number"/>
+        <EditTextPreference
+            android:key="session_timeout_minutes"
+            android:title="Session timeout (minutes)"
+            android:summary="Default: 10 minutes"
+            android:defaultValue="10"
+            android:inputType="number"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Security">
+        <SwitchPreferenceCompat
+            android:key="lan_only"
+            android:title="LAN only mode"
+            android:summary="Block requests from non-LAN IPs"
+            android:defaultValue="true"/>
+        <SwitchPreferenceCompat
+            android:key="ip_binding"
+            android:title="IP binding for sessions"
+            android:summary="Bind session tokens to originating IP"
+            android:defaultValue="false"/>
+        <EditTextPreference
+            android:key="rate_limit"
+            android:title="Rate limit (SMS/minute)"
+            android:summary="Max SMS per minute per session. Default: 10"
+            android:defaultValue="10"
+            android:inputType="number"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+        <Preference android:title="BorzSoft LAN SMS Gateway"
+            android:summary="Version 1.0.0 — Professional LAN SMS Gateway"/>
+        <Preference android:title="Device MAC Lock"
+            android:summary="fc:d9:08:c3:20:60"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

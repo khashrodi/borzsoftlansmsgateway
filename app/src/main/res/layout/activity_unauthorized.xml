@@ -1,51 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/borzsoft_primary"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background" android:gravity="center"
+    android:orientation="vertical" android:padding="32dp">
 
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/ic_lock"
-        android:contentDescription="Lock"/>
+    <ImageView android:layout_width="80dp" android:layout_height="80dp"
+        android:src="@drawable/ic_lock" android:contentDescription="lock"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Unauthorized Device"
-        android:textColor="@color/status_offline"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Unauthorized Device" android:textColor="@color/status_offline"
+        android:textSize="26sp" android:textStyle="bold" android:layout_marginTop="24dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="BorzSoft License Invalid"
-        android:textColor="@color/borzsoft_text_secondary"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:layout_marginTop="12dp"/>
+    <View android:layout_width="60dp" android:layout_height="3dp"
+        android:background="@color/accent" android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
 
-    <View
-        android:layout_width="60dp"
-        android:layout_height="2dp"
-        android:background="@color/borzsoft_highlight"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="BorzSoft License Invalid" android:textColor="@color/on_surface_muted"
+        android:textSize="15sp" android:gravity="center"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="This device is not authorized to run BorzSoft LAN SMS Gateway.\nContact your administrator for a valid license."
-        android:textColor="@color/borzsoft_text_secondary"
-        android:textSize="13sp"
-        android:gravity="center"
-        android:lineSpacingMultiplier="1.4"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="This application is locked to a specific device.\nYour device is not authorized.\n\nContact your administrator."
+        android:textColor="@color/on_surface_muted" android:textSize="13sp"
+        android:gravity="center" android:layout_marginTop="16dp"
+        android:lineSpacingMultiplier="1.5"/>
 
 </LinearLayout>

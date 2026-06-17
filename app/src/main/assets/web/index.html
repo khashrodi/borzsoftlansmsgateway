@@ -1,572 +1,458 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BorzSoft LAN SMS Gateway</title>
-  <style>
-    :root {
-      --bg: #1a1a2e;
-      --surface: #1f2b47;
-      --accent: #0f3460;
-      --highlight: #e94560;
-      --text: #ffffff;
-      --text-muted: #b0bec5;
-      --success: #00e676;
-      --error: #ff5252;
-      --warn: #ffb300;
-      --radius: 12px;
-      --font: 'Segoe UI', 'Roboto', system-ui, sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    /* ─── Header ─── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid #2d3d5a;
-      padding: 0 24px;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--highlight);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 18px;
-      color: #fff;
-      flex-shrink: 0;
-    }
-    .logo-text { font-size: 18px; font-weight: 700; color: var(--text); }
-    .logo-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
-    .header-spacer { flex: 1; }
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #2d3d5a;
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-    }
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      animation: pulse 2s infinite;
-    }
-    .status-dot.offline { background: var(--error); animation: none; }
-    @keyframes pulse {
-      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
-    }
-    .header-stat {
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      padding: 4px 12px;
-      border-left: 1px solid #2d3d5a;
-    }
-    .header-stat b { display: block; font-size: 16px; color: var(--text); }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BorzSoft SMS Gateway</title>
+<style>
+:root{
+  --bg:#111827;--surface:#1f2937;--surface2:#374151;
+  --accent:#e94560;--accent2:#c73652;
+  --primary:#3b82f6;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;
+  --text:#f9fafb;--muted:#9ca3af;--border:#374151;
+  --radius:14px;--font:'Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    /* ─── Login Overlay ─── */
-    #login-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .login-box {
-      background: var(--surface);
-      border: 1px solid #2d3d5a;
-      border-radius: 20px;
-      padding: 40px;
-      width: 400px;
-      max-width: 95vw;
-    }
-    .login-logo {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .login-logo .icon {
-      width: 56px; height: 56px;
-      background: var(--highlight);
-      border-radius: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: 900;
-      margin-bottom: 12px;
-    }
-    .login-logo h2 { font-size: 22px; color: var(--text); margin-bottom: 4px; }
-    .login-logo p { font-size: 13px; color: var(--text-muted); }
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid #2d3d5a;
-      margin-bottom: 24px;
-    }
-    .tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--text-muted);
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-    }
-    .tab.active { color: var(--highlight); border-bottom-color: var(--highlight); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-    input[type="text"], input[type="password"], input[type="tel"], textarea, select {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid #2d3d5a;
-      border-radius: 8px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: var(--font);
-    }
-    input:focus, textarea:focus, select:focus { border-color: var(--highlight); }
-    select option { background: var(--surface); }
-    .form-group { margin-bottom: 18px; }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.3px;
-    }
-    .btn-primary { background: var(--highlight); color: #fff; }
-    .btn-primary:hover { background: #c73652; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-secondary { background: var(--accent); color: #fff; }
-    .btn-sm {
-      width: auto;
-      padding: 8px 16px;
-      font-size: 13px;
-      border-radius: 6px;
-    }
+/* ─── HEADER ─── */
+header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 20px;height:60px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.logo{width:34px;height:34px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:18px;flex-shrink:0}
+.logo-name{font-size:17px;font-weight:700}
+.logo-sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.hdr-spacer{flex:1}
+.pill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);
+  border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.dot.off{background:var(--red);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-stat{padding:4px 16px;border-left:1px solid var(--border);text-align:center}
+.hdr-stat b{display:block;font-size:18px;font-weight:700}
+.hdr-stat span{font-size:10px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);
+  border-radius:8px;padding:5px 14px;cursor:pointer;font-size:12px;transition:.2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-    /* ─── Main Layout ─── */
-    main { padding: 24px; max-width: 1100px; margin: 0 auto; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
-    .card {
-      background: var(--surface);
-      border: 1px solid #2d3d5a;
-      border-radius: var(--radius);
-      padding: 20px;
-    }
-    .card-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-    textarea { resize: vertical; min-height: 80px; }
+/* ─── LOGIN ─── */
+#overlay{position:fixed;inset:0;background:var(--bg);z-index:999;
+  display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;
+  padding:40px;width:420px;max-width:95vw}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-icon{width:56px;height:56px;background:var(--accent);border-radius:14px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:28px;margin-bottom:10px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--muted)}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:14px;
+  color:var(--muted);border-bottom:2px solid transparent;transition:.2s}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+input,textarea,select{width:100%;background:rgba(255,255,255,.05);
+  border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+  color:var(--text);font-size:14px;outline:none;transition:.2s;font-family:var(--font)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--surface)}
+.btn{width:100%;padding:13px;border:none;border-radius:10px;
+  font-size:14px;font-weight:600;cursor:pointer;transition:.2s;letter-spacing:.3px}
+.btn-acc{background:var(--accent);color:#fff}
+.btn-acc:hover:not(:disabled){background:var(--accent2)}
+.btn-acc:disabled{opacity:.5;cursor:not-allowed}
+.btn-out{background:none;border:1px solid var(--border);color:var(--muted)}
+.btn-out:hover{border-color:var(--muted)}
+.btn-sm{width:auto;padding:8px 16px;font-size:12px;border-radius:8px}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#c53030}
+.err-msg{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none}
 
-    /* ─── Logs Table ─── */
-    .logs-section { margin-top: 20px; }
-    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .log-table th {
-      text-align: left;
-      color: var(--text-muted);
-      font-weight: 500;
-      padding: 8px 12px;
-      border-bottom: 1px solid #2d3d5a;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-    }
-    .log-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    .log-table tr:last-child td { border-bottom: none; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .badge-sent { background: rgba(0,230,118,0.15); color: var(--success); }
-    .badge-failed { background: rgba(255,82,82,0.15); color: var(--error); }
-    .badge-pending { background: rgba(255,179,0,0.15); color: var(--warn); }
-    .empty-state {
-      text-align: center;
-      color: var(--text-muted);
-      padding: 32px;
-      font-size: 14px;
-    }
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--surface);
-      border: 1px solid #2d3d5a;
-      border-radius: 10px;
-      padding: 14px 20px;
-      font-size: 14px;
-      z-index: 9999;
-      display: none;
-      min-width: 260px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    .toast.show { display: block; animation: slideIn 0.3s ease; }
-    @keyframes slideIn { from { transform: translateX(100px); opacity:0; } to { transform: translateX(0); opacity:1; } }
-    .spinner {
-      display: inline-block;
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.2);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .token-display {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid #2d3d5a;
-      border-radius: 8px;
-      padding: 12px;
-      font-family: monospace;
-      font-size: 11px;
-      color: var(--highlight);
-      word-break: break-all;
-      margin-top: 12px;
-    }
-    .logout-btn {
-      background: none;
-      border: 1px solid #2d3d5a;
-      color: var(--text-muted);
-      border-radius: 8px;
-      padding: 6px 14px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-    }
-    .logout-btn:hover { border-color: var(--error); color: var(--error); }
-  </style>
+/* ─── MAIN ─── */
+main{padding:20px;max-width:1120px;margin:0 auto}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:600px){.grid3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;
+  color:var(--muted);margin-bottom:16px}
+.stat-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;text-align:center}
+.stat-num{font-size:36px;font-weight:800;line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-sent{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-fail{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-pend{background:rgba(245,158,11,.15);color:var(--yellow)}
+.badge-deliv{background:rgba(59,130,246,.15);color:var(--primary)}
+
+/* ─── TABLE ─── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--muted);font-weight:500;padding:8px 12px;
+  border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.empty{text-align:center;color:var(--muted);padding:32px;font-size:14px}
+
+/* ─── SESSION TOKEN ─── */
+.token-box{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;font-family:monospace;font-size:11px;color:var(--accent);
+  word-break:break-all;margin:12px 0}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:12px 20px;
+  font-size:13px;z-index:9999;display:none;min-width:240px;max-width:320px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{display:block;animation:slideIn .3s}
+@keyframes slideIn{from{transform:translateX(120px);opacity:0}to{transform:none;opacity:1}}
+
+/* ─── SPINNER ─── */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.2);
+  border-top-color:#fff;border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+textarea{resize:vertical;min-height:90px}
+.row{display:flex;gap:8px}.row .btn{flex:1}
+hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.info-row{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.info-row:last-child{border:none}
+.info-key{color:var(--muted)}
+.info-val{color:var(--text);font-family:monospace;font-size:12px;text-align:right;max-width:55%}
+</style>
 </head>
 <body>
 
-<!-- ─── Login Overlay ─── -->
-<div id="login-overlay">
+<!-- LOGIN OVERLAY -->
+<div id="overlay">
   <div class="login-box">
     <div class="login-logo">
-      <div class="icon">B</div>
-      <h2>BorzSoft Gateway</h2>
-      <p>LAN SMS Gateway — Secure Access</p>
+      <div class="login-icon">B</div>
+      <div class="login-title">BorzSoft Gateway</div>
+      <div class="login-sub">LAN SMS Gateway — Secure Access</div>
     </div>
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('token')">Token Login</div>
-      <div class="tab" onclick="switchTab('qr')">QR Login</div>
+      <div class="tab active" onclick="tab('token')">Token Login</div>
+      <div class="tab" onclick="tab('qr')">QR Data</div>
     </div>
-    <div id="tab-token" class="tab-content active">
-      <div class="form-group">
+    <div id="pane-token" class="tab-pane active">
+      <div class="field">
         <label>Access Token</label>
-        <input type="text" id="token-input" placeholder="Paste your token from the app…"/>
+        <input id="inp-token" type="text" placeholder="Paste token from BorzSoft app…"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
       </div>
-      <button class="btn btn-primary" onclick="loginWithToken()">Login</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text-muted);text-align:center">
-        Get your token from the BorzSoft app on the gateway device
+      <button class="btn btn-acc" onclick="doLogin()">Login</button>
+      <p style="margin-top:10px;font-size:11px;color:var(--muted);text-align:center">
+        Get your token from the BorzSoft app → Web Access tab
       </p>
     </div>
-    <div id="tab-qr" class="tab-content">
-      <div style="text-align:center;padding:20px;color:var(--text-muted)">
-        <p style="margin-bottom:12px">Scan the QR code shown in the BorzSoft app</p>
-        <p>The token from the QR code will be automatically filled in.</p>
-        <div class="form-group" style="margin-top:20px">
-          <label>Or paste QR data manually</label>
-          <input type="text" id="qr-data-input" placeholder='{"token":"…"}' />
-        </div>
-        <button class="btn btn-primary" onclick="loginFromQrData()">Login with QR Data</button>
+    <div id="pane-qr" class="tab-pane">
+      <div class="field">
+        <label>QR Code Data (JSON)</label>
+        <textarea id="inp-qr" rows="4" placeholder='{"token":"…","ip":"…","port":8080,"expires":"…"}'></textarea>
       </div>
+      <button class="btn btn-acc" onclick="loginQr()">Login with QR Data</button>
     </div>
-    <div id="login-error" style="color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center"></div>
+    <div class="err-msg" id="login-err"></div>
   </div>
 </div>
 
-<!-- ─── Header ─── -->
+<!-- HEADER -->
 <header>
-  <div class="logo-icon">B</div>
-  <div>
-    <div class="logo-text">BorzSoft</div>
-    <div class="logo-sub">LAN SMS Gateway</div>
-  </div>
-  <div class="header-spacer"></div>
-  <div class="status-pill">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-text">Checking…</span>
-  </div>
-  <div class="header-stat">
-    <b id="hdr-ip">—</b>
-    Gateway IP
-  </div>
-  <div class="header-stat">
-    <b id="hdr-sms">—</b>
-    SMS Today
-  </div>
+  <div class="logo">B</div>
+  <div><div class="logo-name">BorzSoft</div><div class="logo-sub">LAN SMS Gateway</div></div>
+  <div class="hdr-spacer"></div>
+  <div class="pill"><div class="dot" id="hdr-dot"></div><span id="hdr-status">Connecting…</span></div>
+  <div class="hdr-stat"><b id="hdr-ip">—</b><span>Gateway</span></div>
+  <div class="hdr-stat"><b id="hdr-sms">—</b><span>SMS Today</span></div>
+  <div class="hdr-stat"><b id="hdr-sess">—</b><span>Sessions</span></div>
   <button class="logout-btn" onclick="logout()">Logout</button>
 </header>
 
-<!-- ─── Main ─── -->
-<main id="main-content" style="display:none">
-  <div class="grid">
-    <!-- Send SMS -->
+<!-- MAIN CONTENT -->
+<main id="main" style="display:none">
+
+  <!-- Stats Row -->
+  <div class="grid3" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="s-today" style="color:var(--accent)">—</div>
+      <div class="stat-lbl">SMS Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-sessions" style="color:var(--primary)">—</div>
+      <div class="stat-lbl">Active Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-status" style="color:var(--green)">Online</div>
+      <div class="stat-lbl">Gateway Status</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+
+    <!-- SEND SMS -->
     <div class="card">
       <div class="card-title">Send SMS</div>
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="sms-phone" placeholder="+98912xxxxxxx"/>
+      <div class="field"><label>Phone Number</label>
+        <input id="f-phone" type="tel" placeholder="+93700000000"/></div>
+      <div class="field"><label>Message</label>
+        <textarea id="f-msg" oninput="updateCount()" placeholder="Type your message…"></textarea></div>
+      <div style="font-size:11px;color:var(--muted);text-align:right;margin:-10px 0 12px">
+        <span id="char-count">0</span> chars • <span id="parts-count">1</span> part(s)
       </div>
-      <div class="form-group">
-        <label>Message</label>
-        <textarea id="sms-message" placeholder="Type your message…"></textarea>
-      </div>
-      <div class="form-group">
-        <label>SIM Card</label>
-        <select id="sms-sim">
+      <div class="field"><label>SIM Card</label>
+        <select id="f-sim">
           <option value="default">Default SIM</option>
           <option value="sim1">SIM 1</option>
           <option value="sim2">SIM 2</option>
         </select>
       </div>
-      <button class="btn btn-primary" id="send-btn" onclick="sendSms()">Send SMS</button>
-      <div id="send-result" style="margin-top:12px;font-size:13px;display:none"></div>
-    </div>
-
-    <!-- Status / Token Info -->
-    <div class="card">
-      <div class="card-title">Session & Status</div>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Your session token:</p>
-      <div class="token-display" id="session-token-display">—</div>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px" id="session-expires"></p>
-      <hr style="border-color:#2d3d5a;margin:16px 0"/>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Status</div>
-          <div style="font-size:20px;font-weight:700;margin-top:4px" id="stat-status">—</div>
-        </div>
-        <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px">
-          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">SMS Today</div>
-          <div style="font-size:20px;font-weight:700;margin-top:4px" id="stat-sms">—</div>
-        </div>
+      <div class="row">
+        <button class="btn btn-acc" id="btn-send" onclick="sendSms()">Send SMS</button>
+        <button class="btn btn-out btn-sm" onclick="clearForm()">Clear</button>
       </div>
+      <div id="send-result" style="margin-top:12px;font-size:13px;display:none;
+        padding:10px;border-radius:8px;background:rgba(0,0,0,.2)"></div>
+    </div>
+
+    <!-- SESSION INFO -->
+    <div class="card">
+      <div class="card-title">Your Session</div>
+      <div class="info-row">
+        <span class="info-key">Token</span>
+        <span class="info-val" id="sess-token" style="color:var(--accent)">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Expires</span>
+        <span class="info-val" id="sess-exp">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Gateway IP</span>
+        <span class="info-val" id="sess-ip">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-key">Messages Sent</span>
+        <span class="info-val" id="sess-sent">0</span>
+      </div>
+      <hr/>
+      <div class="card-title" style="margin-bottom:10px">Server Status</div>
+      <div class="info-row"><span class="info-key">Status</span>
+        <span class="info-val" id="srv-status" style="color:var(--green)">—</span></div>
+      <div class="info-row"><span class="info-key">Uptime</span>
+        <span class="info-val" id="srv-uptime">—</span></div>
+      <div class="info-row"><span class="info-key">Version</span>
+        <span class="info-val">1.0.0</span></div>
+    </div>
+
+  </div>
+
+  <!-- LOGS TABLE -->
+  <div class="card">
+    <div style="display:flex;align-items:center;margin-bottom:16px">
+      <div class="card-title" style="margin:0;flex:1">SMS Logs — Real-time</div>
+      <button class="btn btn-out btn-sm" onclick="loadLogs()" style="margin-right:8px">Refresh</button>
+      <span id="log-count" style="font-size:12px;color:var(--muted)">0 entries</span>
+    </div>
+    <div class="tbl-wrap" id="logs-wrap">
+      <div class="empty">No logs yet. Send your first SMS!</div>
     </div>
   </div>
 
-  <!-- Logs -->
-  <div class="card logs-section">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div class="card-title" style="margin-bottom:0">Real-time SMS Logs</div>
-      <button class="btn btn-secondary btn-sm" onclick="loadLogs()">Refresh</button>
-    </div>
-    <div id="logs-container">
-      <div class="empty-state">No logs yet</div>
-    </div>
-  </div>
 </main>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  let SESSION_TOKEN = null;
-  const BASE = window.location.origin;
+let TOKEN = null, sessData = null, pollingTimer = null, sentInSession = 0;
+const B = window.location.origin;
 
-  // ── Tab switching ──
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelector(`.tab:nth-child(${tab==='token'?1:2})`).classList.add('active');
-    document.getElementById(`tab-${tab}`).classList.add('active');
+/* ── TAB ── */
+function tab(t) {
+  document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', (t==='token'&&i===0)||(t==='qr'&&i===1)));
+  document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+  document.getElementById('pane-'+t).classList.add('active');
+}
+
+/* ── LOGIN ── */
+async function doLogin() {
+  const tok = document.getElementById('inp-token').value.trim();
+  if (!tok) { showErr('Please enter a token'); return; }
+  TOKEN = tok;
+  finishLogin();
+}
+function loginQr() {
+  try {
+    const d = JSON.parse(document.getElementById('inp-qr').value.trim());
+    if (!d.token) { showErr('No token in QR data'); return; }
+    TOKEN = d.token;
+    finishLogin();
+  } catch { showErr('Invalid JSON — paste the full QR code data'); }
+}
+function finishLogin() {
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+  const short = TOKEN.substring(0, 20) + '…';
+  document.getElementById('sess-token').textContent = short;
+  document.getElementById('sess-ip').textContent = B;
+  loadStatus(); loadLogs();
+  pollingTimer = setInterval(() => { loadStatus(); loadLogs(); }, 15000);
+}
+function showErr(m) {
+  const el = document.getElementById('login-err');
+  el.textContent = m; el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+function logout() {
+  TOKEN = null; clearInterval(pollingTimer);
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+}
+
+/* ── STATUS ── */
+async function loadStatus() {
+  try {
+    const r = await fetch(B+'/api/status');
+    const d = await r.json();
+    document.getElementById('hdr-dot').className = 'dot';
+    document.getElementById('hdr-status').textContent = 'Online';
+    document.getElementById('hdr-ip').textContent = d.serverIp+':'+d.port;
+    document.getElementById('hdr-sms').textContent = d.smsSentToday ?? '—';
+    document.getElementById('hdr-sess').textContent = d.activeSessions ?? '—';
+    document.getElementById('s-today').textContent = d.smsSentToday ?? 0;
+    document.getElementById('s-sessions').textContent = d.activeSessions ?? 0;
+    document.getElementById('s-status').textContent = 'Online';
+    document.getElementById('s-status').style.color = 'var(--green)';
+    document.getElementById('srv-status').textContent = 'Online';
+    document.getElementById('srv-status').style.color = 'var(--green)';
+    document.getElementById('srv-uptime').textContent = d.timestamp?.substring(0,19).replace('T',' ') ?? '—';
+  } catch {
+    document.getElementById('hdr-dot').className = 'dot off';
+    document.getElementById('hdr-status').textContent = 'Offline';
+    document.getElementById('s-status').textContent = 'Offline';
+    document.getElementById('s-status').style.color = 'var(--red)';
   }
+}
 
-  // ── Login ──
-  async function loginWithToken() {
-    const token = document.getElementById('token-input').value.trim();
-    if (!token) { showLoginError('Please enter a token'); return; }
-    SESSION_TOKEN = token;
-    document.getElementById('session-token-display').textContent = token;
-    document.getElementById('login-overlay').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
-    await loadStatus();
-    await loadLogs();
-    startPolling();
-  }
+/* ── SEND ── */
+function updateCount() {
+  const msg = document.getElementById('f-msg').value;
+  const len = msg.length;
+  const parts = len === 0 ? 1 : len <= 160 ? 1 : Math.ceil(len / 153);
+  document.getElementById('char-count').textContent = len;
+  document.getElementById('parts-count').textContent = parts;
+}
 
-  function loginFromQrData() {
-    const raw = document.getElementById('qr-data-input').value.trim();
-    try {
-      const data = JSON.parse(raw);
-      if (data.token) {
-        document.getElementById('token-input').value = data.token;
-        switchTab('token');
-        loginWithToken();
-      } else {
-        showLoginError('Invalid QR data — no token found');
-      }
-    } catch {
-      showLoginError('Invalid JSON in QR data');
+async function sendSms() {
+  const phone = document.getElementById('f-phone').value.trim();
+  const msg = document.getElementById('f-msg').value.trim();
+  const sim = document.getElementById('f-sim').value;
+  if (!phone) { toast('Phone is required', 'err'); return; }
+  if (!msg) { toast('Message is required', 'err'); return; }
+  if (!TOKEN) { toast('Not logged in', 'err'); return; }
+
+  const btn = document.getElementById('btn-send');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Sending…';
+  const res = document.getElementById('send-result');
+  res.style.display = 'none';
+
+  try {
+    const r = await fetch(B+'/web/send', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token:TOKEN,phone,message:msg,sim})
+    });
+    const d = await r.json();
+    res.style.display = 'block';
+    if (r.ok && d.success) {
+      res.style.color = 'var(--green)';
+      res.textContent = '✓ SMS sent (ID: '+d.logId+')';
+      document.getElementById('f-phone').value = '';
+      document.getElementById('f-msg').value = '';
+      updateCount();
+      sentInSession++;
+      document.getElementById('sess-sent').textContent = sentInSession;
+      toast('SMS sent successfully!', 'ok');
+      setTimeout(loadLogs, 1500);
+      loadStatus();
+    } else {
+      res.style.color = 'var(--red)';
+      res.textContent = '✗ ' + (d.error || 'Failed');
+      toast(d.error || 'Send failed', 'err');
     }
+  } catch (e) {
+    res.style.display = 'block';
+    res.style.color = 'var(--red)';
+    res.textContent = '✗ Network error: '+e.message;
+    toast('Network error', 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Send SMS';
   }
+}
 
-  function showLoginError(msg) {
-    const el = document.getElementById('login-error');
-    el.textContent = msg;
-    el.style.display = 'block';
+function clearForm() {
+  document.getElementById('f-phone').value = '';
+  document.getElementById('f-msg').value = '';
+  updateCount();
+  document.getElementById('send-result').style.display = 'none';
+}
+
+/* ── LOGS ── */
+async function loadLogs() {
+  try {
+    const r = await fetch(B+'/api/logs?limit=100');
+    const d = await r.json();
+    renderLogs(d.logs || []);
+  } catch {}
+}
+
+function renderLogs(logs) {
+  const wrap = document.getElementById('logs-wrap');
+  document.getElementById('log-count').textContent = logs.length+' entries';
+  if (!logs.length) {
+    wrap.innerHTML = '<div class="empty">No SMS logs yet</div>'; return;
   }
+  const rows = logs.map(l => {
+    const badge = l.status==='SENT'||l.status==='DELIVERED'
+      ? (l.status==='DELIVERED'?'badge-deliv':'badge-sent')
+      : l.status==='FAILED' ? 'badge-fail' : 'badge-pend';
+    const t = (l.sentAt||'').substring(0,19).replace('T',' ');
+    return `<tr>
+      <td style="font-family:monospace">${esc(l.phone)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.message)}</td>
+      <td><span class="badge ${badge}">${esc(l.status)}</span></td>
+      <td style="color:var(--muted)">${esc(l.sim?.toUpperCase())}</td>
+      <td style="color:var(--muted)">${esc(l.source)}</td>
+      <td style="color:var(--muted);font-size:11px;white-space:nowrap">${esc(l.senderIp)}</td>
+      <td style="color:var(--muted);font-size:11px;font-family:monospace;white-space:nowrap">${esc(t)}</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table>
+    <thead><tr><th>Phone</th><th>Message</th><th>Status</th><th>SIM</th><th>Source</th><th>Sender IP</th><th>Time</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
 
-  function logout() {
-    SESSION_TOKEN = null;
-    stopPolling();
-    document.getElementById('login-overlay').style.display = 'flex';
-    document.getElementById('main-content').style.display = 'none';
-  }
+/* ── TOAST ── */
+function toast(msg, type='info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = type==='ok'?'var(--green)':type==='err'?'var(--red)':'var(--border)';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
 
-  // ── Status ──
-  async function loadStatus() {
-    try {
-      const r = await fetch(`${BASE}/api/status`);
-      const d = await r.json();
-      document.getElementById('status-dot').className = 'status-dot';
-      document.getElementById('status-text').textContent = 'Online';
-      document.getElementById('hdr-ip').textContent = `${d.serverIp}:${d.port}`;
-      document.getElementById('hdr-sms').textContent = d.smsSentToday ?? '—';
-      document.getElementById('stat-status').textContent = 'Online';
-      document.getElementById('stat-status').style.color = 'var(--success)';
-      document.getElementById('stat-sms').textContent = d.smsSentToday ?? 0;
-    } catch {
-      document.getElementById('status-dot').className = 'status-dot offline';
-      document.getElementById('status-text').textContent = 'Offline';
-      document.getElementById('stat-status').textContent = 'Offline';
-      document.getElementById('stat-status').style.color = 'var(--error)';
-    }
-  }
-
-  // ── Send SMS ──
-  async function sendSms() {
-    const phone = document.getElementById('sms-phone').value.trim();
-    const message = document.getElementById('sms-message').value.trim();
-    const sim = document.getElementById('sms-sim').value;
-    const btn = document.getElementById('send-btn');
-    const result = document.getElementById('send-result');
-
-    if (!phone || !message) { showToast('Phone and message are required', 'error'); return; }
-    if (!SESSION_TOKEN) { showToast('Not logged in', 'error'); return; }
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Sending…';
-
-    try {
-      const r = await fetch(`${BASE}/web/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: SESSION_TOKEN, phone, message, sim })
-      });
-      const d = await r.json();
-      if (r.ok && d.success) {
-        showToast('SMS sent successfully!', 'success');
-        document.getElementById('sms-phone').value = '';
-        document.getElementById('sms-message').value = '';
-        await loadLogs();
-        await loadStatus();
-      } else {
-        showToast(d.error || 'Failed to send SMS', 'error');
-      }
-    } catch (e) {
-      showToast('Network error: ' + e.message, 'error');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Send SMS';
-    }
-  }
-
-  // ── Logs ──
-  async function loadLogs() {
-    try {
-      const r = await fetch(`${BASE}/api/logs`);
-      const d = await r.json();
-      renderLogs(d.logs || []);
-    } catch { /* ignore */ }
-  }
-
-  function renderLogs(logs) {
-    const container = document.getElementById('logs-container');
-    if (!logs.length) {
-      container.innerHTML = '<div class="empty-state">No SMS logs yet</div>';
-      return;
-    }
-    container.innerHTML = `<table class="log-table">
-      <thead><tr>
-        <th>Phone</th><th>Message</th><th>SIM</th>
-        <th>Status</th><th>Sender IP</th><th>Time</th>
-      </tr></thead>
-      <tbody>${logs.map(log => `<tr>
-        <td>${escHtml(log.phone)}</td>
-        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(log.message)}</td>
-        <td>${escHtml(log.sim)}</td>
-        <td><span class="badge badge-${log.status.toLowerCase()}">${log.status}</span></td>
-        <td style="font-size:11px;color:var(--text-muted)">${escHtml(log.senderIp)}</td>
-        <td style="font-size:11px;color:var(--text-muted)">${escHtml(log.sentAt?.substring(0,19)?.replace('T',' ') || '')}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
-  }
-
-  // ── Toast ──
-  function showToast(msg, type='info') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.borderColor = type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : '#2d3d5a';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
-
-  function escHtml(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  // ── Polling ──
-  let pollInterval = null;
-  function startPolling() {
-    pollInterval = setInterval(async () => { await loadStatus(); await loadLogs(); }, 15000);
-  }
-  function stopPolling() {
-    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
-  }
-
-  // Enter key on token input
-  document.getElementById('token-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') loginWithToken();
-  });
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 </script>
 </body>
 </html>

@@ -1,8 +1,7 @@
-# BorzSoft SMS Gateway ProGuard Rules
 -keep class com.borzsoft.smsgateway.** { *; }
 -keep class fi.iki.elonen.** { *; }
 -keep class com.google.gson.** { *; }
 -keep class com.google.zxing.** { *; }
--keepattributes *Annotation*
--keepattributes SourceFile,LineNumberTable
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
 -dontwarn fi.iki.elonen.**
+-dontwarn com.google.errorprone.**

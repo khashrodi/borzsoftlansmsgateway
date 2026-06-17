@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -16,12 +16,17 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -45,26 +50,47 @@ android {
 
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
         }
     }
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.constraintlayout)
+    implementation(libs.constraintlayout)
+    implementation(libs.recyclerview)
+    implementation(libs.fragment.ktx)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    implementation(libs.viewpager2)
+    implementation(libs.swiperefresh)
+    implementation(libs.cardview)
+    implementation(libs.preference.ktx)
+    implementation(libs.workmanager)
+
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.service)
+
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
-    implementation(libs.lifecycle.viewmodel)
-    implementation(libs.lifecycle.livedata)
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.okhttp)
-    implementation(libs.zxing.core)
-    implementation(libs.nanohttpd)
+
     implementation(libs.coroutines.android)
     implementation(libs.gson)
+    implementation(libs.zxing.core)
+    implementation(libs.nanohttpd)
 }

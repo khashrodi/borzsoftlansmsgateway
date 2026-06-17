@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <!-- QR Code Card -->
+        <com.google.android.material.card.MaterialCardView android:id="@+id/card_qr"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/surface" app:cardCornerRadius="16dp"
+            app:strokeColor="@color/card_stroke" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="12dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="20dp" android:gravity="center_horizontal">
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="WEB ACCESS — QR LOGIN"
+                    android:textColor="@color/on_surface_muted" android:textSize="11sp"
+                    android:letterSpacing="0.1" android:textAllCaps="true"
+                    android:layout_marginBottom="16dp"/>
+
+                <ImageView android:id="@+id/iv_qr_code"
+                    android:layout_width="240dp" android:layout_height="240dp"
+                    android:background="@color/white" android:padding="12dp"
+                    android:contentDescription="QR Code"/>
+
+                <TextView android:id="@+id/tv_gateway_url"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="http://0.0.0.0:8080"
+                    android:textColor="@color/primary" android:textSize="14sp"
+                    android:fontFamily="monospace" android:layout_marginTop="12dp"/>
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Scan with phone camera or enter token in browser"
+                    android:textColor="@color/on_surface_muted" android:textSize="12sp"
+                    android:gravity="center" android:layout_marginTop="8dp"/>
+
+                <!-- Token display -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="12dp" android:layout_marginTop="12dp">
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="SESSION TOKEN" android:textColor="@color/on_surface_muted"
+                        android:textSize="10sp" android:letterSpacing="0.1" android:textAllCaps="true"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView android:id="@+id/tv_token"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:text="—" android:textColor="@color/accent"
+                        android:textSize="11sp" android:fontFamily="monospace"
+                        android:singleLine="true" android:ellipsize="middle"/>
+
+                </LinearLayout>
+
+                <!-- Buttons -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginTop="16dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_new_qr"
+                        android:layout_width="0dp" android:layout_height="44dp"
+                        android:layout_weight="1" android:text="New QR"
+                        app:backgroundTint="@color/accent" app:cornerRadius="10dp"
+                        android:textColor="@color/white" android:layout_marginEnd="6dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_copy_token"
+                        android:layout_width="0dp" android:layout_height="44dp"
+                        android:layout_weight="1" android:text="Copy Token"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="@color/card_stroke" android:textColor="@color/on_surface_muted"
+                        app:cornerRadius="10dp" android:layout_marginEnd="6dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_copy_url"
+                        android:layout_width="0dp" android:layout_height="44dp"
+                        android:layout_weight="1" android:text="Copy URL"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="@color/card_stroke" android:textColor="@color/on_surface_muted"
+                        app:cornerRadius="10dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Sessions Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/surface" app:cardCornerRadius="16dp"
+            app:strokeColor="@color/card_stroke" app:strokeWidth="1dp" app:cardElevation="0dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="20dp">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/tv_session_count"
+                        android:text="0 active sessions" android:textColor="@color/on_surface_muted"
+                        android:textSize="11sp" android:textAllCaps="true" android:letterSpacing="0.1"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_revoke_all"
+                        android:layout_width="wrap_content" android:layout_height="36dp"
+                        android:text="Revoke All"
+                        app:backgroundTint="@color/status_offline" app:cornerRadius="8dp"
+                        android:textColor="@color/white" android:textSize="12sp"/>
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_sessions"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
