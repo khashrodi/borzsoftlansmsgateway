@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BorzSoft SMS Gateway</string>
+    <string name="app_fullname">BorzSoft LAN SMS Gateway</string>
+    <string name="unauthorized_title">Unauthorized Device</string>
+    <string name="unauthorized_msg">BorzSoft License Invalid\n\nThis application is locked to a specific device.\nYour device MAC address does not match the authorized device.</string>
+    <string name="gateway_running">Gateway Running</string>
+    <string name="gateway_stopped">Gateway Stopped</string>
+    <string name="start_gateway">Start Gateway</string>
+    <string name="stop_gateway">Stop Gateway</string>
+    <string name="generate_qr">Generate New QR</string>
+    <string name="revoke_all">Revoke All Sessions</string>
+    <string name="scan_to_login">Scan QR Code to login from browser</string>
+    <string name="web_access">Web Access Panel</string>
+    <string name="connected_devices">Connected Devices</string>
+    <string name="sms_logs">SMS Logs</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="phone_hint">Phone number (e.g. +98912…)</string>
+    <string name="message_hint">Message text</string>
+</resources>

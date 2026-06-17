@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Background circle -->
+    <path android:fillColor="#E94560"
+        android:pathData="M60,0 A60,60 0 1,1 60,120 A60,60 0 1,1 60,0Z"/>
+    <!-- Signal waves (SMS/WiFi) -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M60,25 L45,50 L55,50 L55,75 L65,75 L65,50 L75,50 Z"/>
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.6"
+        android:pathData="M35,45 Q60,20 85,45"
+        android:strokeColor="#FFFFFF" android:strokeWidth="3"
+        android:fillColor="@android:color/transparent"/>
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.4"
+        android:pathData="M25,35 Q60,5 95,35"
+        android:strokeColor="#FFFFFF" android:strokeWidth="3"
+        android:fillColor="@android:color/transparent"/>
+    <!-- B letter -->
+    <path android:fillColor="#1A1A2E"
+        android:pathData="M42,80 L42,95 L56,95 Q62,95 62,91 Q62,88 58,87 Q63,86 63,82 Q63,80 57,80 Z
+                          M47,84 L54,84 Q57,84 57,86 Q57,88 54,88 L47,88 Z
+                          M47,91 L55,91 Q58,91 58,92.5 Q58,95 55,95 L47,95 Z"/>
+</vector>

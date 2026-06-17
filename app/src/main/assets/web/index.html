@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BorzSoft LAN SMS Gateway</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --surface: #1f2b47;
+      --accent: #0f3460;
+      --highlight: #e94560;
+      --text: #ffffff;
+      --text-muted: #b0bec5;
+      --success: #00e676;
+      --error: #ff5252;
+      --warn: #ffb300;
+      --radius: 12px;
+      --font: 'Segoe UI', 'Roboto', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    /* ─── Header ─── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid #2d3d5a;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--highlight);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .logo-text { font-size: 18px; font-weight: 700; color: var(--text); }
+    .logo-sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+    .header-spacer { flex: 1; }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #2d3d5a;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    .status-dot.offline { background: var(--error); animation: none; }
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    .header-stat {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      border-left: 1px solid #2d3d5a;
+    }
+    .header-stat b { display: block; font-size: 16px; color: var(--text); }
+
+    /* ─── Login Overlay ─── */
+    #login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      background: var(--surface);
+      border: 1px solid #2d3d5a;
+      border-radius: 20px;
+      padding: 40px;
+      width: 400px;
+      max-width: 95vw;
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-logo .icon {
+      width: 56px; height: 56px;
+      background: var(--highlight);
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .login-logo h2 { font-size: 22px; color: var(--text); margin-bottom: 4px; }
+    .login-logo p { font-size: 13px; color: var(--text-muted); }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #2d3d5a;
+      margin-bottom: 24px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab.active { color: var(--highlight); border-bottom-color: var(--highlight); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    input[type="text"], input[type="password"], input[type="tel"], textarea, select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #2d3d5a;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: var(--font);
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--highlight); }
+    select option { background: var(--surface); }
+    .form-group { margin-bottom: 18px; }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary { background: var(--highlight); color: #fff; }
+    .btn-primary:hover { background: #c73652; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--accent); color: #fff; }
+    .btn-sm {
+      width: auto;
+      padding: 8px 16px;
+      font-size: 13px;
+      border-radius: 6px;
+    }
+
+    /* ─── Main Layout ─── */
+    main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid #2d3d5a;
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ─── Logs Table ─── */
+    .logs-section { margin-top: 20px; }
+    .log-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .log-table th {
+      text-align: left;
+      color: var(--text-muted);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-bottom: 1px solid #2d3d5a;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+    .log-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .log-table tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-sent { background: rgba(0,230,118,0.15); color: var(--success); }
+    .badge-failed { background: rgba(255,82,82,0.15); color: var(--error); }
+    .badge-pending { background: rgba(255,179,0,0.15); color: var(--warn); }
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 32px;
+      font-size: 14px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid #2d3d5a;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 14px;
+      z-index: 9999;
+      display: none;
+      min-width: 260px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    .toast.show { display: block; animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { transform: translateX(100px); opacity:0; } to { transform: translateX(0); opacity:1; } }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .token-display {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid #2d3d5a;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--highlight);
+      word-break: break-all;
+      margin-top: 12px;
+    }
+    .logout-btn {
+      background: none;
+      border: 1px solid #2d3d5a;
+      color: var(--text-muted);
+      border-radius: 8px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: var(--error); color: var(--error); }
+  </style>
+</head>
+<body>
+
+<!-- ─── Login Overlay ─── -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">B</div>
+      <h2>BorzSoft Gateway</h2>
+      <p>LAN SMS Gateway — Secure Access</p>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('token')">Token Login</div>
+      <div class="tab" onclick="switchTab('qr')">QR Login</div>
+    </div>
+    <div id="tab-token" class="tab-content active">
+      <div class="form-group">
+        <label>Access Token</label>
+        <input type="text" id="token-input" placeholder="Paste your token from the app…"/>
+      </div>
+      <button class="btn btn-primary" onclick="loginWithToken()">Login</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text-muted);text-align:center">
+        Get your token from the BorzSoft app on the gateway device
+      </p>
+    </div>
+    <div id="tab-qr" class="tab-content">
+      <div style="text-align:center;padding:20px;color:var(--text-muted)">
+        <p style="margin-bottom:12px">Scan the QR code shown in the BorzSoft app</p>
+        <p>The token from the QR code will be automatically filled in.</p>
+        <div class="form-group" style="margin-top:20px">
+          <label>Or paste QR data manually</label>
+          <input type="text" id="qr-data-input" placeholder='{"token":"…"}' />
+        </div>
+        <button class="btn btn-primary" onclick="loginFromQrData()">Login with QR Data</button>
+      </div>
+    </div>
+    <div id="login-error" style="color:var(--error);font-size:13px;margin-top:12px;display:none;text-align:center"></div>
+  </div>
+</div>
+
+<!-- ─── Header ─── -->
+<header>
+  <div class="logo-icon">B</div>
+  <div>
+    <div class="logo-text">BorzSoft</div>
+    <div class="logo-sub">LAN SMS Gateway</div>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="status-pill">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Checking…</span>
+  </div>
+  <div class="header-stat">
+    <b id="hdr-ip">—</b>
+    Gateway IP
+  </div>
+  <div class="header-stat">
+    <b id="hdr-sms">—</b>
+    SMS Today
+  </div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<!-- ─── Main ─── -->
+<main id="main-content" style="display:none">
+  <div class="grid">
+    <!-- Send SMS -->
+    <div class="card">
+      <div class="card-title">Send SMS</div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="sms-phone" placeholder="+98912xxxxxxx"/>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="sms-message" placeholder="Type your message…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>SIM Card</label>
+        <select id="sms-sim">
+          <option value="default">Default SIM</option>
+          <option value="sim1">SIM 1</option>
+          <option value="sim2">SIM 2</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="send-btn" onclick="sendSms()">Send SMS</button>
+      <div id="send-result" style="margin-top:12px;font-size:13px;display:none"></div>
+    </div>
+
+    <!-- Status / Token Info -->
+    <div class="card">
+      <div class="card-title">Session & Status</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Your session token:</p>
+      <div class="token-display" id="session-token-display">—</div>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:8px" id="session-expires"></p>
+      <hr style="border-color:#2d3d5a;margin:16px 0"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">Status</div>
+          <div style="font-size:20px;font-weight:700;margin-top:4px" id="stat-status">—</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px">
+          <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">SMS Today</div>
+          <div style="font-size:20px;font-weight:700;margin-top:4px" id="stat-sms">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="card logs-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:0">Real-time SMS Logs</div>
+      <button class="btn btn-secondary btn-sm" onclick="loadLogs()">Refresh</button>
+    </div>
+    <div id="logs-container">
+      <div class="empty-state">No logs yet</div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let SESSION_TOKEN = null;
+  const BASE = window.location.origin;
+
+  // ── Tab switching ──
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.tab:nth-child(${tab==='token'?1:2})`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+  }
+
+  // ── Login ──
+  async function loginWithToken() {
+    const token = document.getElementById('token-input').value.trim();
+    if (!token) { showLoginError('Please enter a token'); return; }
+    SESSION_TOKEN = token;
+    document.getElementById('session-token-display').textContent = token;
+    document.getElementById('login-overlay').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    await loadStatus();
+    await loadLogs();
+    startPolling();
+  }
+
+  function loginFromQrData() {
+    const raw = document.getElementById('qr-data-input').value.trim();
+    try {
+      const data = JSON.parse(raw);
+      if (data.token) {
+        document.getElementById('token-input').value = data.token;
+        switchTab('token');
+        loginWithToken();
+      } else {
+        showLoginError('Invalid QR data — no token found');
+      }
+    } catch {
+      showLoginError('Invalid JSON in QR data');
+    }
+  }
+
+  function showLoginError(msg) {
+    const el = document.getElementById('login-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function logout() {
+    SESSION_TOKEN = null;
+    stopPolling();
+    document.getElementById('login-overlay').style.display = 'flex';
+    document.getElementById('main-content').style.display = 'none';
+  }
+
+  // ── Status ──
+  async function loadStatus() {
+    try {
+      const r = await fetch(`${BASE}/api/status`);
+      const d = await r.json();
+      document.getElementById('status-dot').className = 'status-dot';
+      document.getElementById('status-text').textContent = 'Online';
+      document.getElementById('hdr-ip').textContent = `${d.serverIp}:${d.port}`;
+      document.getElementById('hdr-sms').textContent = d.smsSentToday ?? '—';
+      document.getElementById('stat-status').textContent = 'Online';
+      document.getElementById('stat-status').style.color = 'var(--success)';
+      document.getElementById('stat-sms').textContent = d.smsSentToday ?? 0;
+    } catch {
+      document.getElementById('status-dot').className = 'status-dot offline';
+      document.getElementById('status-text').textContent = 'Offline';
+      document.getElementById('stat-status').textContent = 'Offline';
+      document.getElementById('stat-status').style.color = 'var(--error)';
+    }
+  }
+
+  // ── Send SMS ──
+  async function sendSms() {
+    const phone = document.getElementById('sms-phone').value.trim();
+    const message = document.getElementById('sms-message').value.trim();
+    const sim = document.getElementById('sms-sim').value;
+    const btn = document.getElementById('send-btn');
+    const result = document.getElementById('send-result');
+
+    if (!phone || !message) { showToast('Phone and message are required', 'error'); return; }
+    if (!SESSION_TOKEN) { showToast('Not logged in', 'error'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Sending…';
+
+    try {
+      const r = await fetch(`${BASE}/web/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: SESSION_TOKEN, phone, message, sim })
+      });
+      const d = await r.json();
+      if (r.ok && d.success) {
+        showToast('SMS sent successfully!', 'success');
+        document.getElementById('sms-phone').value = '';
+        document.getElementById('sms-message').value = '';
+        await loadLogs();
+        await loadStatus();
+      } else {
+        showToast(d.error || 'Failed to send SMS', 'error');
+      }
+    } catch (e) {
+      showToast('Network error: ' + e.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send SMS';
+    }
+  }
+
+  // ── Logs ──
+  async function loadLogs() {
+    try {
+      const r = await fetch(`${BASE}/api/logs`);
+      const d = await r.json();
+      renderLogs(d.logs || []);
+    } catch { /* ignore */ }
+  }
+
+  function renderLogs(logs) {
+    const container = document.getElementById('logs-container');
+    if (!logs.length) {
+      container.innerHTML = '<div class="empty-state">No SMS logs yet</div>';
+      return;
+    }
+    container.innerHTML = `<table class="log-table">
+      <thead><tr>
+        <th>Phone</th><th>Message</th><th>SIM</th>
+        <th>Status</th><th>Sender IP</th><th>Time</th>
+      </tr></thead>
+      <tbody>${logs.map(log => `<tr>
+        <td>${escHtml(log.phone)}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(log.message)}</td>
+        <td>${escHtml(log.sim)}</td>
+        <td><span class="badge badge-${log.status.toLowerCase()}">${log.status}</span></td>
+        <td style="font-size:11px;color:var(--text-muted)">${escHtml(log.senderIp)}</td>
+        <td style="font-size:11px;color:var(--text-muted)">${escHtml(log.sentAt?.substring(0,19)?.replace('T',' ') || '')}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  // ── Toast ──
+  function showToast(msg, type='info') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.borderColor = type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--error)' : '#2d3d5a';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Polling ──
+  let pollInterval = null;
+  function startPolling() {
+    pollInterval = setInterval(async () => { await loadStatus(); await loadLogs(); }, 15000);
+  }
+  function stopPolling() {
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+  }
+
+  // Enter key on token input
+  document.getElementById('token-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loginWithToken();
+  });
+</script>
+</body>
+</html>

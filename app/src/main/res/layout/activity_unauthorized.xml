@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/borzsoft_primary"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_lock"
+        android:contentDescription="Lock"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unauthorized Device"
+        android:textColor="@color/status_offline"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BorzSoft License Invalid"
+        android:textColor="@color/borzsoft_text_secondary"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:layout_marginTop="12dp"/>
+
+    <View
+        android:layout_width="60dp"
+        android:layout_height="2dp"
+        android:background="@color/borzsoft_highlight"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This device is not authorized to run BorzSoft LAN SMS Gateway.\nContact your administrator for a valid license."
+        android:textColor="@color/borzsoft_text_secondary"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.4"/>
+
+</LinearLayout>
